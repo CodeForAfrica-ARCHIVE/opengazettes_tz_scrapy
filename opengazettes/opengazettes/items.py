@@ -11,4 +11,12 @@ import scrapy
 class OpengazettesItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+    gazette_link = scrapy.Field()
+    publication_date = scrapy.Field()
+    gazette_number = scrapy.Field()
+    file_urls = scrapy.Field()
+    filename = scrapy.Field()
+    gazette_title = scrapy.Field()
+    gazette_day = scrapy.Field()
+    gazette_month = scrapy.Field()
+    gazette_year = scrapy.Field()
