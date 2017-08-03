@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-
+import urllib.parse
+from urllib import request
+from http.cookiejar import CookieJar
+from urllib.error import HTTPError
 import os.path
 import logging
 from scrapy.http import Request, FormRequest
@@ -15,7 +18,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-class OpengazettesFilesPipeline(FilesPipeline):
+class OpengazettesPipeline(FilesPipeline):
 
     def media_downloaded(self, response, request, info):
         referer = referer_str(request)
@@ -78,43 +81,8 @@ class OpengazettesFilesPipeline(FilesPipeline):
 
     def get_media_requests(self, item, info):
 
-        # return [Request(x, meta={'filename': item["filename"],
-        #                          'publication_date': item["publication_date"], ''}, method='POST', )
-        #         for x in item.get(self.files_urls_field, [])]
-        get_cookies = []
-        for i, x in enumerate(item.get(self.files_urls_field, [])):
-            one_response = Request(x, meta={
-                                   'filename': item["filename"], 'publication_date': item["publication_date"], 'cookiejar': i})
-            get_cookies.append(one_response)
-
-        final_response = []
-        for response in get_cookies:
-            form_stuff = response.css('form input[type="hidden"]').extract()
-            download_id = form_stuff[1].split()
-            download_id = download_id[len(
-                download_id) - 1].split('"')[1].split('"')
-            file_key = form_stuff[2].split()[2].split('"')[1]
-            formdata = {"submit": "Download", "license_agree": "1",
-                        "download": download_id, file_key: "1"}
-
-            headers = {"Host": "www.utumishi.go.tz",
-                       "Connection": "keep-alive",
-                       "Content-Length": "78",
-                       "Cache-Control": "max-age=0",
-                       "Origin": "http://www.utumishi.go.tz",
-                       "Upgrade-Insecure-Requests": "1",
-                       "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36",
-                       "Content-Type": "application/x-www-form-urlencoded",
-                       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-                       "Referer": "http://www.utumishi.go.tz/utumishiweb/index.php?option=com_phocadownload&view=file&id=88:toleo-na-16-la-tarehe-20-aprili-2012&Itemid=179&lang=en",
-                       "Accept-Encoding": "gzip, deflate",
-                       "Accept-Language": "en-US,en;q=0.8"}
-
-            each_file = FormRequest(response.url, meta={
-                'filename': item["filename"], 'publication_date': item["publication_date"], 'cookiejar': response.meta['cookiejar']}, headers=headers, formdata=formdata)
-            final_response.append(each_file)
-        
-        return final_response
+        return [Request(x, meta=item)
+                for x in item.get(self.files_urls_field, [])]
 
     def file_path(self, request, response=None, info=None):
         # start of deprecation warning block (can be removed in the future)
