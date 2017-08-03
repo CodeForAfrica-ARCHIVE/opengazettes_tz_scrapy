@@ -35,6 +35,7 @@ DOWNLOAD_DELAY = 3
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
 
+# COOKIES_DEBUG = True
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
 
@@ -64,9 +65,11 @@ DOWNLOAD_DELAY = 3
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
+# ITEM_PIPELINES = {
 #    'opengazettes.pipelines.OpengazettesPipeline': 300,
-#}
+# }
+
+ITEM_PIPELINES = {'scrapy.pipelines.files.FilesPipeline': 1}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
