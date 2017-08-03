@@ -80,7 +80,6 @@ class GazettesSpider(scrapy.Spider):
     def get_month_number(self, month):
 
         month = month.lower()
-        print
         for one_month in self.months:
             if month in one_month:
                 return str(self.months.index(one_month) + 1)
