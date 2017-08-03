@@ -33,14 +33,15 @@ class GazettesSpider(scrapy.Spider):
             if one.find(str(year)) != -1:
                 year_links.append(one)
         for one_link in year_links:
-            yield response.follow(one_link, callback=self.parse_year)
+            yield response.follow(one_link, callback=self.parse_year, meta={'year': year})
 
     def parse_year(self, response):
         next_links = response.css('div.pd-float a::attr(href)').extract()
-        for a_link in next_links:
+        for i, a_link in enumerate(next_links):
             request = response.follow(
-                a_link, callback=self.parse_page)
+                a_link, callback=self.parse_page, meta={'cookiejar': i})
             request.meta['url_link'] = a_link
+            request.meta['year'] = response.meta['year']
             yield request
 
     def parse_page(self, response):
@@ -61,20 +62,40 @@ class GazettesSpider(scrapy.Spider):
             int(g_num)
         except:
             g_num = '(nf)'
-        the_date = datetime.strptime(
-            day + ' ' + str(month) + ' ' + file_data[-1], "%d %m %Y")
+        try:
+            the_date = datetime.strptime(
+                day + ' ' + str(month) + ' ' + response.meta['year'], "%d %m %Y")
+
+            gazette_item['gazette_title'] = 'Tanzania Government Gazette No.{} Dated {} {} {}'.format(
+            g_num, datetime.strftime(the_date, '%d'), datetime.strftime(the_date, '%m'), datetime.strftime(the_date, '%Y'))
+        except:
+            the_date = datetime.strptime(response.meta['year'], "%Y")
+            gazette_item['gazette_title'] = 'Tanzania Government Gazette No.{} Dated {} {} {}'.format(g_num, '(nf)', '(nf)', datetime.strftime(the_date, '%Y'))
+
+        gazette_item['item_cookies'] = response.meta['cookiejar']
+        gazette_item['form_data'] = self.get_data(response)
         gazette_item['gazette_number'] = g_num
         gazette_item['gazette_link'] = "http://www.utumishi.go.tz" + file_url
         gazette_item['gazette_day'] = day
         gazette_item['gazette_month'] = month
-        gazette_item['gazette_year'] = file_data[-1]
-        gazette_item['file_urls'] = "http://www.utumishi.go.tz" + file_url
+        gazette_item['gazette_year'] = response.meta['year']
+        gazette_item['file_urls'] = ["http://www.utumishi.go.tz" + file_url]
         gazette_item['publication_date'] = the_date
         gazette_item['filename'] = 'opengazettes-tz-no-{}-dated-{}-{}-{}'.format(
             g_num, day, month, file_data[-1])
-        gazette_item['gazette_title'] = 'Tanzania Government Gazette No.{} Dated {} {} {}'.format(
-            g_num, datetime.strftime(the_date, '%d'), datetime.strftime(the_date, '%m'), datetime.strftime(the_date, '%Y'))
+
+        
         yield gazette_item
+
+    def get_data(self, response):
+        form_stuff = response.css('form input[type="hidden"]').extract()
+        download_id = form_stuff[1].split()
+        download_id = download_id[len(
+            download_id) - 1].split('"')[1].split('"')[0]
+        file_key = form_stuff[2].split()[2].split('"')[1]
+        formdata = {"submit": "Download", "license_agree": "1",
+                    "download": download_id, file_key: "1"}
+        return formdata
 
     def get_month(self, url_data):
         url_data = url_data.split('&')
