@@ -72,7 +72,7 @@ DOWNLOAD_DELAY = 3
 ITEM_PIPELINES = {'scrapy.pipelines.files.FilesPipeline': 1}
 
 FEED_STORAGES = {
-    's3': 'opengazettes_tz.extensions.feedexport.S3FeedStorage'
+    's3': 'opengazettes.extensions.feedexport.S3FeedStorage'
 }
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
