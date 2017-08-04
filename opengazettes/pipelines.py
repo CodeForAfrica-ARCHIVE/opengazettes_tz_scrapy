@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
-import urllib.parse
-from urllib import request
-from http.cookiejar import CookieJar
-from urllib.error import HTTPError
-import os.path
 import logging
-from scrapy.http import Request, FormRequest
+from scrapy.http import Request
 from scrapy.utils.request import referer_str
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.pipelines.files import FileException
@@ -109,7 +104,7 @@ class OpengazettesPipeline(FilesPipeline):
 
         # Now using file name passed in the meta data
         filename = request.meta['filename']
-        media_ext = os.path.splitext(url)[1]
+        media_ext = ".pdf"
         return '%s/%s/%s%s' % \
             (request.meta['publication_date'].strftime("%Y"),
                 request.meta['publication_date'].strftime("%m"),
