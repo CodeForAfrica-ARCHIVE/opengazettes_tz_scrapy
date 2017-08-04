@@ -14,7 +14,7 @@ BOT_NAME = 'opengazettes'
 SPIDER_MODULES = ['opengazettes.spiders']
 NEWSPIDER_MODULE = 'opengazettes.spiders'
 FILE_STORE_ACL = 'public-read'
-DELTAFETCH_ENABLED = True
+DELTAFETCH_ENABLED = False
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'opengazettes (+http://www.yourdomain.com)'
@@ -45,12 +45,12 @@ DOWNLOAD_DELAY = 3
 #   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 #   'Accept-Language': 'en',
 #}
-
+# FILES_STORE = '/path/to/valid/dir'
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-SPIDER_MIDDLEWARES = {
-   'scrapy_deltafetch.DeltaFetch': True,
-}
+# SPIDER_MIDDLEWARES = {
+#    'scrapy_deltafetch.DeltaFetch': True,
+# }
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
@@ -70,10 +70,13 @@ SPIDER_MIDDLEWARES = {
 #    'opengazettes.pipelines.OpengazettesPipeline': 300,
 # }
 
-ITEM_PIPELINES = {'scrapy.pipelines.files.FilesPipeline': 1,}
+ITEM_PIPELINES = {
+    'opengazettes.pipelines.OpengazettesPipeline': 300,
+}
 
 FEED_STORAGES = {
-    's3': 'opengazettes.extensions.feedexport.S3FeedStorage'
+    # 's3': 'opengazettes.extensions.feedexport.S3FeedStorage'
+    'file': 'scrapy.extensions.feedexport.FileFeedStorage'
 }
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
