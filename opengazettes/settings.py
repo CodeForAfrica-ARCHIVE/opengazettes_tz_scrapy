@@ -17,7 +17,7 @@ FILE_STORE_ACL = 'public-read'
 # DELTAFETCH_ENABLED = True
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'opengazettes (+http://www.yourdomain.com)'
+USER_AGENT = 'gazeti.AFRICA (+https://gazeti.africa)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
