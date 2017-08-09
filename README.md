@@ -13,9 +13,9 @@
 ## Running it Locally
 - To run the spider locally, you can choose to store the scraped files locally to do this set the  ENV variable
 - `SCRAPY_FILES_STORE=/directory/to/store/the/files` which should point to a local folder
-- Then run the command  `scrapy crawl tz_gazeyyes_v2 -a year=2016 -o sl_gazettes.jsonlines`          
+- Then run the command  `scrapy crawl tz_gazettes_v2 -a year=2016 -o tz_gazettes.jsonlines`          
    where year is the year you want to scrape gazettes from
-- `sn_gazettes.jsonlines` is the file where crawls are saved, this too can be a directory
+- `tz_gazettes.jsonlines` is the file where crawls are saved, this too can be a directory
 
 ## Deploying to [Scraping Hub](https://scrapinghub.com)
 
