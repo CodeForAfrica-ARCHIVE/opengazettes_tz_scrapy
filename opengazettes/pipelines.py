@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from scrapy.http import Request
+from scrapy.http import Request, FormRequest
 from scrapy.utils.request import referer_str
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.pipelines.files import FileException
@@ -76,9 +76,20 @@ class OpengazettesPipeline(FilesPipeline):
 
     def get_media_requests(self, item, info):
 
-        return [Request(x, meta={'filename': item["filename"],
-                'publication_date': item["publication_date"]})
-                for x in item.get(self.files_urls_field, [])]
+        headers = {"Host": "www.utumishi.go.tz",
+                   "Connection": "keep-alive",
+                   "Cache-Control": "max-age=0",
+                   "Origin": "http://www.utumishi.go.tz",
+                   "Upgrade-Insecure-Requests": "1",
+                   "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36",
+                   "Content-Type": "application/x-www-form-urlencoded",
+                   "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+                   "Accept-Encoding": "gzip, deflate",
+                   "Accept-Language": "en-US,en;q=0.8"}
+
+        return [FormRequest(x, formdata=item['form_data'], headers=headers, meta={
+            'cookiejar': item['item_cookies'], 'publication_date': item['publication_date'], 'filename': item['filename']})
+            for x in item.get(self.files_urls_field, [])]
 
     def file_path(self, request, response=None, info=None):
         # start of deprecation warning block (can be removed in the future)
@@ -109,3 +120,13 @@ class OpengazettesPipeline(FilesPipeline):
             (request.meta['publication_date'].strftime("%Y"),
                 request.meta['publication_date'].strftime("%m"),
                 filename, media_ext)
+
+    def get_data(self, response):
+        form_stuff = response.css('form input[type="hidden"]').extract()
+        download_id = form_stuff[1].split()
+        download_id = download_id[len(
+            download_id) - 1].split('"')[1].split('"')[0]
+        file_key = form_stuff[2].split()[2].split('"')[1]
+        formdata = {"submit": "Download", "license_agree": "1",
+                    "download": download_id, file_key: "1"}
+        return formdata
