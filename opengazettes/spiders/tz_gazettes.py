@@ -54,7 +54,7 @@ class GazettesSpider(scrapy.Spider):
                     else:
                         g_month = self.get_month_number(
                             re.findall(r'\b[A-Za-z]+\b', date)[0])
-                        
+
                         g_day = self.get_day(date)
 
                 if str(g_day) == '29' and (str(g_month) == '2' or str(g_month) == '02'):
