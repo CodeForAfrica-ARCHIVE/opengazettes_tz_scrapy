@@ -84,7 +84,6 @@ class GazettesSpider(scrapy.Spider):
         gazette_item['filename'] = 'opengazettes-tz-no-{}-dated-{}-{}-{}'.format(
             g_num, day, month, file_data[-1])
 
-        
         yield gazette_item
 
     def get_data(self, response):

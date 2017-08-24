@@ -21,3 +21,5 @@ class OpengazettesItem(scrapy.Item):
     gazette_day = scrapy.Field()
     gazette_month = scrapy.Field()
     gazette_year = scrapy.Field()
+    item_cookies = scrapy.Field()
+    form_data = scrapy.Field()
